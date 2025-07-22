@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bomb Game - Исправленная версия</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            color: white;
+            min-height: 100vh;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+        
+        .game-container {
+            width: 100%;
+            max-width: 95vw;
+            background: rgba(30, 30, 46, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            border: 1px solid #4cc9f0;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: #f72585;
+            text-shadow: 0 0 10px rgba(247, 37, 133, 0.5);
+        }
+        
+        .subtitle {
+            font-size: 1rem;
+            margin-bottom: 15px;
+            color: #bde0fe;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-card {
+            background: rgba(42, 42, 74, 0.8);
+            border-radius: 10px;
+            padding: 10px;
+            border: 1px solid #4361ee;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .stat-title {
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            color: #bde0fe;
+        }
+        
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #4cc9f0;
+        }
+        
+        .level-container {
+            background: rgba(42, 42, 74, 0.8);
+            border-radius: 10px;
+            padding: 10px;
+            margin: 15px 0;
+            border: 1px solid #4361ee;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .level-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .rounds-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 10px;
+        }
+        
+        .round-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #4361ee;
+            transition: all 0.3s;
+        }
+        
+        .round-dot.played {
+            background: #f72585;
+        }
+        
+        .round-dot.success {
+            background: #4cc9f0;
+            transform: scale(1.2);
+            box-shadow: 0 0 8px #4cc9f0;
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .input-label {
+            text-align: center;
+            margin-bottom: 3px;
+            font-size: 0.9rem;
+            color: #bde0fe;
+        }
+        
+        .bet-input, .bombs-input {
+            padding: 10px;
+            background: #2a2a4a;
+            color: white;
+            border: 1px solid #4361ee;
+            border-radius: 8px;
+            font-size: 1rem;
+            text-align: center;
+            width: 100%;
+        }
+        
+        .start-btn {
+            padding: 12px 15px;
+            background: linear-gradient(to right, #4361ee, #3a0ca3);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .start-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .game-info {
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(42, 42, 74, 0.8);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            border: 1px solid #4361ee;
+        }
+        
+        .multiplier-info {
+            font-size: 1.1rem;
+            margin: 10px 0;
+            color: #4cc9f0;
+        }
+        
+        .tiles-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            margin: 15px 0;
+        }
+        
+        .tile {
+            position: relative;
+            background: linear-gradient(135deg, #3a3a5c, #2a2a4a);
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid #4361ee;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            aspect-ratio: 1/1;
+        }
+        
+        .tile.revealed {
+            background: #1a1a2a;
+            cursor: default;
+        }
+        
+        .tile.bomb {
+            background: linear-gradient(135deg, #f72585, #b5179e);
+            color: white;
+        }
+        
+        .tile.crystal {
+            background: linear-gradient(135deg, #2a2a4a, #1a1a2a);
+            color: #4cc9f0;
+        }
+        
+        .message-container {
+            min-height: 70px;
+            padding: 10px;
+            background: rgba(42, 42, 74, 0.8);
+            border-radius: 10px;
+            margin: 15px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #4361ee;
+        }
+        
+        #message {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            text-align: center;
+            padding: 5px;
+        }
+        
+        .win-message {
+            color: #4cc9f0;
+            font-weight: bold;
+        }
+        
+        .lose-message {
+            color: #f72585;
+            font-weight: bold;
+        }
+        
+        .game-over {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 25, 47, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            border-radius: 15px;
+            padding: 15px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+        
+        .game-over.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .game-over h2 {
+            font-size: 2rem;
+            color: #f72585;
+            margin-bottom: 15px;
+            text-shadow: 0 0 15px rgba(247, 37, 133, 0.7);
+        }
+        
+        .game-over p {
+            font-size: 1rem;
+            margin-bottom: 20px;
+            max-width: 90%;
+            text-align: center;
+            color: #bde0fe;
+        }
+        
+        .restart-btn {
+            padding: 12px 30px;
+            background: linear-gradient(to right, #4361ee, #3a0ca3);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .action-buttons {
+            margin-top: 10px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .cashout-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            background: linear-gradient(to right, #f72585, #b5179e);
+            color: white;
+            font-size: 1rem;
+            min-width: 160px;
+        }
+        
+        .status-info {
+            padding: 8px;
+            border-radius: 8px;
+            margin: 8px 0;
+            background: rgba(67, 97, 238, 0.2);
+            font-size: 0.9rem;
+        }
+        
+        @keyframes tileReveal {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .tile.revealed {
+            animation: tileReveal 0.3s ease-out;
+        }
+        
+        .explosion {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(247, 37, 133, 0.8) 0%, rgba(181, 23, 158, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            animation: explosionAnim 0.8s ease-out;
+        }
+        
+        @keyframes explosionAnim {
+            0% { 
+                transform: translate(-50%, -50%) scale(0.5); 
+                opacity: 1; 
+            }
+            70% { 
+                transform: translate(-50%, -50%) scale(2.5); 
+                opacity: 0.7; 
+            }
+            100% { 
+                transform: translate(-50%, -50%) scale(3); 
+                opacity: 0; 
+            }
+        }
+
+        /* Планшеты */
+        @media (min-width: 600px) {
+            .game-container {
+                padding: 20px;
+                max-width: 700px;
+                border-radius: 20px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .controls {
+                grid-template-columns: 1fr 1fr auto;
+            }
+            
+            .tile {
+                font-size: 2.2rem;
+            }
+        }
+
+        /* Десктоп */
+        @media (min-width: 768px) {
+            .game-container {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .tile {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-over" id="game-over">
+            <h2>GAME OVER</h2>
+            <p>Вы не достигли цели за 3 раунда. Игра будет перезапущена</p>
+            <button class="restart-btn" id="restart-btn">Начать заново</button>
+        </div>
+        
+        <h1>💣 BOMB GAME 💎</h1>
+        <div class="subtitle">Собери алмазы и достигни цели за 3 раунда!</div>
+        
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-title">Баланс</div>
+                <div class="stat-value" id="balance">300</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Цель</div>
+                <div class="stat-value" id="target">450</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Уровень</div>
+                <div class="stat-value" id="current-level">1</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Раунды</div>
+                <div class="stat-value" id="round-counter">1/3</div>
+            </div>
+        </div>
+        
+        <div class="level-container">
+            <div class="level-info">
+                <span>Следующая цель: <span id="next-target">450</span></span>
+                <span>Осталось: $<span id="remaining">150</span></span>
+            </div>
+            <div class="rounds-indicator" id="rounds-indicator">
+                <div class="round-dot" id="round-1"></div>
+                <div class="round-dot" id="round-2"></div>
+                <div class="round-dot" id="round-3"></div>
+            </div>
+        </div>
+        
+        <div class="status-info">
+            <div id="status-text">Наберите $450 на балансе для перехода на следующий уровень</div>
+        </div>
+        
+        <div class="controls">
+            <div class="input-group">
+                <div class="input-label">Ставка</div>
+                <input type="number" class="bet-input" id="bet" value="50" min="10" max="300" step="10">
+            </div>
+            <div class="input-group">
+                <div class="input-label">Бомбы</div>
+                <select class="bombs-input" id="bombs">
+                    <option value="1">1 бомба</option>
+                    <option value="3">3 бомбы</option>
+                    <option value="5" selected>5 бомб</option>
+                    <option value="7">7 бомб</option>
+                    <option value="10">10 бомб</option>
+                </select>
+            </div>
+            <button class="start-btn" id="start-btn">Играть</button>
+        </div>
+        
+        <div class="game-info">
+            <div class="multiplier-info">
+                Множитель: <span id="current-multiplier">x1.00</span>
+            </div>
+            <div>Потенциальный выигрыш: $<span id="potential-win">0</span></div>
+        </div>
+        
+        <div class="tiles-container" id="tiles"></div>
+        
+        <div class="message-container">
+            <div id="message">Сделайте ставку и начните игру</div>
+            <div id="action-buttons" class="action-buttons"></div>
+        </div>
+    </div>
+
+    <script>
+        // Основные элементы
+        const balanceEl = document.getElementById('balance');
+        const targetEl = document.getElementById('target');
+        const currentLevelEl = document.getElementById('current-level');
+        const nextTargetEl = document.getElementById('next-target');
+        const remainingEl = document.getElementById('remaining');
+        const roundCounterEl = document.getElementById('round-counter');
+        const currentMultiplierEl = document.getElementById('current-multiplier');
+        const potentialWinEl = document.getElementById('potential-win');
+        const betInput = document.getElementById('bet');
+        const bombsInput = document.getElementById('bombs');
+        const startBtn = document.getElementById('start-btn');
+        const tilesContainer = document.getElementById('tiles');
+        const messageEl = document.getElementById('message');
+        const actionButtonsEl = document.getElementById('action-buttons');
+        const gameOverEl = document.getElementById('game-over');
+        const restartBtn = document.getElementById('restart-btn');
+        const statusTextEl = document.getElementById('status-text');
+        const roundsIndicator = document.getElementById('rounds-indicator');
+        
+        // Игровые переменные
+        let balance = 300;
+        let target = 450;
+        let currentLevel = 1;
+        let roundsPlayed = 0;
+        let maxRounds = 3;
+        let bombs = [];
+        let gameActive = false;
+        let tilesOpened = 0;
+        let currentMultiplier = 1;
+        let baseBet = 0;
+        let cashoutAvailable = false;
+        const crystal = '💎';
+        let animationInProgress = false;
+        
+        // Инициализация
+        updateUI();
+        updateStatus();
+        updateRoundIndicator();
+        
+        // Обработчики событий
+        startBtn.addEventListener('click', startGame);
+        restartBtn.addEventListener('click', restartGame);
+        
+        function startGame() {
+            const bet = parseInt(betInput.value);
+            const bombsCount = parseInt(bombsInput.value);
+            
+            // Проверка ставки
+            if (isNaN(bet) || bet < 10) {
+                showMessage("Минимальная ставка $10!", "error");
+                return;
+            }
+            
+            if (bet > balance) {
+                showMessage("Недостаточно средств!", "error");
+                return;
+            }
+            
+            if (gameActive) {
+                showMessage("Завершите текущую игру!", "error");
+                return;
+            }
+            
+            // Увеличиваем счетчик раундов
+            roundsPlayed++;
+            updateRoundCounter();
+            updateRoundIndicator();
+            
+            // Снимаем ставку с баланса
+            balance -= bet;
+            baseBet = bet;
+            updateUI();
+            updateStatus();
+            
+            // Генерируем бомбы
+            bombs = [];
+            while (bombs.length < bombsCount) {
+                const pos = Math.floor(Math.random() * 25);
+                if (!bombs.includes(pos)) {
+                    bombs.push(pos);
+                }
+            }
+            
+            // Очищаем контейнер с плитками
+            tilesContainer.innerHTML = '';
+            actionButtonsEl.innerHTML = '';
+            
+            // Создаем плитки
+            for (let i = 0; i < 25; i++) {
+                const tile = document.createElement('div');
+                tile.className = 'tile';
+                tile.dataset.index = i;
+                tile.innerHTML = '&nbsp;'; // Гарантирует что элемент будет отображаться
+                
+                // Обработка событий
+                tile.addEventListener('click', function() {
+                    handleTileClick(i);
+                });
+                
+                // Для мобильных устройств
+                tile.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    handleTileClick(i);
+                }, { passive: false });
+                
+                tilesContainer.appendChild(tile);
+            }
+            
+            gameActive = true;
+            tilesOpened = 0;
+            currentMultiplier = 1;
+            cashoutAvailable = false;
+            animationInProgress = false;
+            updateMultiplier();
+            showMessage(`Раунд ${roundsPlayed} начался! Ставка: $${bet}. Бомб: ${bombsCount}.`, "info");
+            startBtn.disabled = true;
+            betInput.disabled = true;
+            bombsInput.disabled = true;
+        }
+        
+        function handleTileClick(index) {
+            // Блокируем клики во время анимации
+            if (!gameActive || animationInProgress) return;
+            
+            const tile = document.querySelector(`.tile[data-index="${index}"]`);
+            if (!tile || tile.classList.contains('revealed')) return;
+            
+            // Помечаем плитку как открытую
+            tile.classList.add('revealed');
+            
+            if (bombs.includes(index)) {
+                // Игрок нашел бомбу
+                animationInProgress = true;
+                gameActive = false; // Блокируем игру сразу
+                
+                tile.classList.add('bomb');
+                tile.textContent = '💣';
+                
+                // Немедленно блокируем кнопки действий
+                actionButtonsEl.innerHTML = '';
+                messageEl.textContent = 'Вы нашли бомбу! Игра завершена.';
+                cashoutAvailable = false;
+                
+                // Эффект взрыва
+                const explosion = document.createElement('div');
+                explosion.className = 'explosion';
+                tile.appendChild(explosion);
+                
+                // Завершаем игру после анимации
+                setTimeout(() => {
+                    endGame(false);
+                    animationInProgress = false;
+                }, 800);
+            } else {
+                // Игрок открыл алмаз
+                tilesOpened++;
+                
+                // Увеличиваем множитель
+                const increment = 0.05 + (bombs.length * 0.01);
+                currentMultiplier = 1 + (tilesOpened * increment * 2);
+                
+                updateMultiplier();
+                
+                tile.classList.add('crystal');
+                tile.textContent = crystal;
+                
+                const potentialWin = Math.round(baseBet * currentMultiplier);
+                
+                // Показываем кнопку "Забрать" только если открыто 3 или более алмазов
+                if (tilesOpened >= 3) {
+                    cashoutAvailable = true;
+                    showMessage(`Найдено алмазов: ${tilesOpened}. Текущий выигрыш: $${potentialWin}`, "win");
+                    
+                    // Добавляем кнопку "Забрать"
+                    actionButtonsEl.innerHTML = '';
+                    
+                    const cashoutBtn = document.createElement('button');
+                    cashoutBtn.className = 'cashout-btn';
+                    cashoutBtn.textContent = `Забрать $${potentialWin}`;
+                    cashoutBtn.addEventListener('click', () => {
+                        const winAmount = Math.round(baseBet * currentMultiplier);
+                        handleWin(winAmount);
+                        endGame(true, true);
+                    });
+                    
+                    actionButtonsEl.appendChild(cashoutBtn);
+                } else {
+                    // Если открыто меньше 3 алмазов
+                    cashoutAvailable = false;
+                    showMessage(`Найдено алмазов: ${tilesOpened}. Откройте еще ${3 - tilesOpened} алмаза, чтобы забрать выигрыш`, "info");
+                    actionButtonsEl.innerHTML = '';
+                }
+            }
+        }
+        
+        function handleWin(amount) {
+            balance += amount;
+            checkLevelProgression();
+            updateUI();
+            updateStatus();
+        }
+        
+        function checkLevelProgression() {
+            // Автоматически повышаем уровень, если баланс превышает цель
+            while (balance >= target) {
+                currentLevel++;
+                const nextTarget = Math.round(target * 1.5);
+                
+                // Если превышаем цель следующего уровня
+                if (balance >= nextTarget) {
+                    showMessage(`Поздравляем! Вы достигли уровня ${currentLevel} и сразу переходите на уровень ${currentLevel+1}!`, "win");
+                    target = nextTarget;
+                } else {
+                    showMessage(`Поздравляем! Вы достигли цели уровня ${currentLevel-1}. Переходим на уровень ${currentLevel}!`, "win");
+                    target = nextTarget;
+                    roundsPlayed = 0; // Сбрасываем раунды при достижении цели
+                    break;
+                }
+            }
+        }
+        
+        function endGame(isWin, isCashout = false) {
+            gameActive = false;
+            
+            // Обновляем баланс при cashout
+            if (isCashout && isWin) {
+                const winAmount = Math.round(baseBet * currentMultiplier);
+                balance += winAmount;
+                checkLevelProgression();
+            }
+            
+            // Показываем все плитки
+            const tiles = document.querySelectorAll('.tile');
+            tiles.forEach((tile, index) => {
+                if (!tile.classList.contains('revealed')) {
+                    setTimeout(() => {
+                        tile.classList.add('revealed');
+                        if (bombs.includes(index)) {
+                            tile.classList.add('bomb');
+                            tile.textContent = '💣';
+                        } else {
+                            tile.classList.add('crystal');
+                            tile.textContent = crystal;
+                        }
+                    }, 300);
+                }
+            });
+            
+            // Проверяем завершение 3 раундов
+            if (roundsPlayed >= maxRounds) {
+                if (balance < target) {
+                    // Игрок не достиг цели за 3 раунда
+                    setTimeout(() => {
+                        showGameOver();
+                    }, 1500);
+                } else {
+                    // Игрок достиг цели в последнем раунде
+                    roundsPlayed = 0;
+                    updateRoundCounter();
+                }
+            }
+            
+            // Включаем кнопки
+            setTimeout(() => {
+                startBtn.disabled = false;
+                betInput.disabled = false;
+                bombsInput.disabled = false;
+                actionButtonsEl.innerHTML = '';
+                
+                // Обновляем UI после игры
+                updateUI();
+                updateStatus();
+                updateRoundIndicator();
+            }, 1000);
+            
+            currentMultiplier = 1;
+            updateMultiplier();
+        }
+        
+        function showGameOver() {
+            gameOverEl.classList.add('visible');
+            gameActive = false;
+            startBtn.disabled = true;
+            betInput.disabled = true;
+            bombsInput.disabled = true;
+        }
+        
+        function restartGame() {
+            // Сброс всех параметров
+            balance = 300;
+            target = 450;
+            currentLevel = 1;
+            roundsPlayed = 0;
+            
+            // Сброс UI
+            gameOverEl.classList.remove('visible');
+            updateUI();
+            updateStatus();
+            updateRoundCounter();
+            updateRoundIndicator();
+            showMessage("Игра началась заново! Удачи!", "info");
+            
+            // Включаем элементы управления
+            startBtn.disabled = false;
+            betInput.disabled = false;
+            bombsInput.disabled = false;
+            
+            // Очищаем плитки
+            tilesContainer.innerHTML = '';
+            actionButtonsEl.innerHTML = '';
+        }
+        
+        function updateUI() {
+            balanceEl.textContent = balance;
+            targetEl.textContent = target;
+            currentLevelEl.textContent = currentLevel;
+            nextTargetEl.textContent = Math.round(target * 1.5);
+            remainingEl.textContent = Math.max(0, target - balance);
+        }
+        
+        function updateRoundCounter() {
+            roundCounterEl.textContent = `${roundsPlayed}/${maxRounds}`;
+        }
+        
+        function updateRoundIndicator() {
+            const dots = document.querySelectorAll('.round-dot');
+            dots.forEach((dot, index) => {
+                dot.className = 'round-dot';
+                if (index < roundsPlayed) {
+                    dot.classList.add('played');
+                }
+                if (index < roundsPlayed && balance >= target) {
+                    dot.classList.add('success');
+                }
+            });
+        }
+        
+        function updateStatus() {
+            if (balance < target) {
+                statusTextEl.textContent = `Наберите $${target} на балансе для перехода на уровень ${currentLevel + 1}`;
+                statusTextEl.style.color = "#4cc9f0";
+            } else {
+                statusTextEl.textContent = `Поздравляем! Вы достигли цели уровня ${currentLevel}. Переходим на уровень ${currentLevel + 1}!`;
+                statusTextEl.style.color = "#f72585";
+            }
+        }
+        
+        function updateMultiplier() {
+            currentMultiplierEl.textContent = `x${currentMultiplier.toFixed(2)}`;
+            potentialWinEl.textContent = Math.round(baseBet * currentMultiplier);
+        }
+        
+        function showMessage(text, type) {
+            messageEl.innerHTML = text;
+            messageEl.className = type + '-message';
+        }
+    </script>
+</body>
+</html>
