@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bomb Game - Исправленная версия</title>
+    <title>Bomb Game Pro - С магазином</title>
     <style>
         * {
             box-sizing: border-box;
@@ -23,6 +23,7 @@
             justify-content: center;
             align-items: center;
             overflow-x: hidden;
+            transition: background 1s ease;
         }
         
         .game-container {
@@ -150,17 +151,30 @@
             width: 100%;
         }
         
-        .start-btn {
-            padding: 12px 15px;
-            background: linear-gradient(to right, #4361ee, #3a0ca3);
-            color: white;
+        .action-buttons-row {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 12px 5px;
             border: none;
             border-radius: 8px;
-            font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        
+        .shop-btn {
+            background: linear-gradient(to right, #7209b7, #560bad);
+            color: white;
+        }
+        
+        .start-btn {
+            background: linear-gradient(to right, #4361ee, #3a0ca3);
+            color: white;
         }
         
         .start-btn:disabled {
@@ -370,6 +384,158 @@
                 opacity: 0; 
             }
         }
+        
+        /* Магазин */
+        .shop-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 25, 47, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+        
+        .shop-modal.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .shop-content {
+            background: rgba(30, 30, 46, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            width: 95%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 2px solid #7209b7;
+            box-shadow: 0 0 20px rgba(114, 9, 183, 0.5);
+        }
+        
+        .shop-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #4361ee;
+            padding-bottom: 10px;
+        }
+        
+        .shop-title {
+            font-size: 1.8rem;
+            color: #7209b7;
+        }
+        
+        .close-shop {
+            background: #f72585;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .shop-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 15px;
+        }
+        
+        .shop-item {
+            background: rgba(42, 42, 74, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid #4361ee;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .shop-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            border-color: #7209b7;
+        }
+        
+        .shop-item.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .shop-item-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .shop-item-name {
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            color: #bde0fe;
+        }
+        
+        .shop-item-price {
+            font-weight: bold;
+            color: #4cc9f0;
+        }
+        
+        .shop-item-effect {
+            font-size: 0.8rem;
+            margin-top: 8px;
+            color: #9d9dff;
+        }
+        
+        /* Индикаторы улучшений */
+        .powerups-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .powerup-badge {
+            background: rgba(67, 97, 238, 0.3);
+            border: 1px solid #4361ee;
+            border-radius: 20px;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* Анимации улучшений */
+        @keyframes shieldPulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes greenFlash {
+            0% { box-shadow: 0 0 0 0 rgba(76, 201, 240, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(76, 201, 240, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(76, 201, 240, 0); }
+        }
+        
+        @keyframes multiplierBoost {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); color: #f72585; }
+            100% { transform: scale(1); }
+        }
 
         /* Планшеты */
         @media (min-width: 600px) {
@@ -390,6 +556,11 @@
             .tile {
                 font-size: 2.2rem;
             }
+            
+            .action-btn {
+                font-size: 1rem;
+                padding: 12px 10px;
+            }
         }
 
         /* Десктоп */
@@ -405,6 +576,10 @@
             .tile {
                 font-size: 2.5rem;
             }
+            
+            .action-btn {
+                padding: 12px 15px;
+            }
         }
     </style>
 </head>
@@ -412,11 +587,24 @@
     <div class="game-container">
         <div class="game-over" id="game-over">
             <h2>GAME OVER</h2>
-            <p>Вы не достигли цели за 3 раунда. Игра будет перезапущена</p>
+            <p id="game-over-reason">Вы не достигли цели за 3 раунда. Игра будет перезапущена</p>
             <button class="restart-btn" id="restart-btn">Начать заново</button>
         </div>
         
-        <h1>💣 BOMB GAME 💎</h1>
+        <!-- Модальное окно магазина -->
+        <div class="shop-modal" id="shop-modal">
+            <div class="shop-content">
+                <div class="shop-header">
+                    <h2 class="shop-title">🛒 Магазин улучшений</h2>
+                    <button class="close-shop" id="close-shop">✕</button>
+                </div>
+                <div class="shop-items" id="shop-items">
+                    <!-- Товары будут добавлены через JS -->
+                </div>
+            </div>
+        </div>
+        
+        <h1>💣 BOMB GAME PRO 💎</h1>
         <div class="subtitle">Собери алмазы и достигни цели за 3 раунда!</div>
         
         <div class="stats-container">
@@ -440,7 +628,7 @@
         
         <div class="level-container">
             <div class="level-info">
-                <span>Следующая цель: <span id="next-target">450</span></span>
+                <span>Следующая цель: <span id="next-target">540</span></span>
                 <span>Осталось: $<span id="remaining">150</span></span>
             </div>
             <div class="rounds-indicator" id="rounds-indicator">
@@ -453,6 +641,9 @@
         <div class="status-info">
             <div id="status-text">Наберите $450 на балансе для перехода на следующий уровень</div>
         </div>
+        
+        <!-- Индикаторы активных улучшений -->
+        <div class="powerups-container" id="powerups-container"></div>
         
         <div class="controls">
             <div class="input-group">
@@ -469,7 +660,10 @@
                     <option value="10">10 бомб</option>
                 </select>
             </div>
-            <button class="start-btn" id="start-btn">Играть</button>
+            <div class="action-buttons-row">
+                <button class="action-btn shop-btn" id="shop-btn">Магазин</button>
+                <button class="action-btn start-btn" id="start-btn">Играть</button>
+            </div>
         </div>
         
         <div class="game-info">
@@ -507,6 +701,12 @@
         const restartBtn = document.getElementById('restart-btn');
         const statusTextEl = document.getElementById('status-text');
         const roundsIndicator = document.getElementById('rounds-indicator');
+        const shopBtn = document.getElementById('shop-btn');
+        const shopModal = document.getElementById('shop-modal');
+        const closeShop = document.getElementById('close-shop');
+        const shopItemsContainer = document.getElementById('shop-items');
+        const gameOverReason = document.getElementById('game-over-reason');
+        const powerupsContainer = document.getElementById('powerups-container');
         
         // Игровые переменные
         let balance = 300;
@@ -522,15 +722,230 @@
         let cashoutAvailable = false;
         const crystal = '💎';
         let animationInProgress = false;
+        let currentBackground = 0;
+        let unlockedBackgrounds = [0];
+        
+        // Система улучшений
+        let nextGamePowerups = {
+            bombProtection: 0,
+            multiplierBoost: 0,
+            bombDetector: 0,
+            cashBoost: false,
+            safeStart: false,
+            bonusBet: false,
+            crystalFinder: false
+        };
+        
+        let activePowerups = {...nextGamePowerups};
+        
+        // Товары в магазине
+        const shopItems = [
+            {
+                id: 'extra-life',
+                name: 'Доп. жизнь',
+                icon: '❤️',
+                price: 150,
+                description: '+1 раунд для достижения цели',
+                effect: () => {
+                    maxRounds += 1;
+                    showMessage("Куплено: Дополнительная жизнь! +1 раунд для достижения цели", "win");
+                    updateRoundCounter();
+                    saveGame();
+                }
+            },
+            {
+                id: 'bomb-protection',
+                name: 'Защита от бомб',
+                icon: '🛡️',
+                price: 200,
+                description: 'Следующая бомба не навредит (на след. игру)',
+                effect: () => {
+                    nextGamePowerups.bombProtection += 1;
+                    showMessage("Куплено: Защита от бомб! Будет применена в следующей игре", "win");
+                    saveGame();
+                }
+            },
+            {
+                id: 'multiplier-boost',
+                name: 'Усилитель множителя',
+                icon: '🚀',
+                price: 180,
+                description: '+0.2 к множителю за алмаз (на след. игру)',
+                effect: () => {
+                    nextGamePowerups.multiplierBoost += 1;
+                    showMessage("Куплено: Усилитель множителя! Будет применен в следующей игре", "win");
+                    saveGame();
+                }
+            },
+            {
+                id: 'bomb-detector',
+                name: 'Детектор бомб',
+                icon: '🔍',
+                price: 250,
+                description: 'Показывает 1 бомбу на поле (на след. игру)',
+                effect: () => {
+                    nextGamePowerups.bombDetector += 1;
+                    showMessage("Куплено: Детектор бомб! Будет применен в следующей игре", "win");
+                    saveGame();
+                }
+            },
+            {
+                id: 'cash-boost',
+                name: 'Денежный буст',
+                icon: '💰',
+                price: 100,
+                description: '+50% к выигрышу (на след. игру)',
+                effect: () => {
+                    nextGamePowerups.cashBoost = true;
+                    showMessage("Куплено: Денежный буст! Будет применен в следующей игре", "win");
+                    saveGame();
+                }
+            },
+            {
+                id: 'safe-start',
+                name: 'Безопасный старт',
+                icon: '🟢',
+                price: 120,
+                description: 'Первые 2 плитки безопасны (на след. игру)',
+                effect: () => {
+                    nextGamePowerups.safeStart = true;
+                    showMessage("Куплено: Безопасный старт! Будет применен в следующей игре", "win");
+                    saveGame();
+                }
+            },
+            {
+                id: 'bonus-bet',
+                name: 'Бонусная ставка',
+                icon: '🎰',
+                price: 80,
+                description: 'Ставка возвращается при проигрыше (на след. игру)',
+                effect: () => {
+                    nextGamePowerups.bonusBet = true;
+                    showMessage("Куплено: Бонусная ставка! Будет применена в следующей игре", "win");
+                    saveGame();
+                }
+            },
+            {
+                id: 'crystal-finder',
+                name: 'Искатель алмазов',
+                icon: '💎',
+                price: 220,
+                description: 'Показывает 1 алмаз на поле (на след. игру)',
+                effect: () => {
+                    nextGamePowerups.crystalFinder = true;
+                    showMessage("Куплено: Искатель алмазов! Будет применен в следующей игре", "win");
+                    saveGame();
+                }
+            },
+            {
+                id: 'bg1',
+                name: 'Космический фон',
+                icon: '🌌',
+                price: 50,
+                description: 'Новый фон для игры',
+                effect: () => {
+                    if (!unlockedBackgrounds.includes(1)) {
+                        unlockedBackgrounds.push(1);
+                    }
+                    applyBackground(1);
+                    showMessage("Куплен космический фон!", "win");
+                    saveGame();
+                }
+            },
+            {
+                id: 'bg2',
+                name: 'Лесной фон',
+                icon: '🌲',
+                price: 50,
+                description: 'Новый фон для игры',
+                effect: () => {
+                    if (!unlockedBackgrounds.includes(2)) {
+                        unlockedBackgrounds.push(2);
+                    }
+                    applyBackground(2);
+                    showMessage("Куплен лесной фон!", "win");
+                    saveGame();
+                }
+            },
+            {
+                id: 'bg3',
+                name: 'Пустынный фон',
+                icon: '🏜️',
+                price: 50,
+                description: 'Новый фон для игры',
+                effect: () => {
+                    if (!unlockedBackgrounds.includes(3)) {
+                        unlockedBackgrounds.push(3);
+                    }
+                    applyBackground(3);
+                    showMessage("Куплен пустынный фон!", "win");
+                    saveGame();
+                }
+            }
+        ];
         
         // Инициализация
+        loadGame();
         updateUI();
         updateStatus();
         updateRoundIndicator();
+        renderShopItems();
+        updatePowerupsDisplay();
         
         // Обработчики событий
         startBtn.addEventListener('click', startGame);
         restartBtn.addEventListener('click', restartGame);
+        shopBtn.addEventListener('click', openShop);
+        closeShop.addEventListener('click', closeShopModal);
+        
+        // Функция для расчета множителя цели в зависимости от уровня
+        function getTargetMultiplier(level) {
+            if (level < 5) return 1.2;       // Легкие уровни (1-4)
+            if (level < 13) return 1.4;      // Средние уровни (5-12)
+            return 1.6;                      // Сложные уровни (13+)
+        }
+        
+        // Функция для расчета следующей цели
+        function calculateNextTarget() {
+            return Math.round(target * getTargetMultiplier(currentLevel));
+        }
+        
+        // Функция сброса улучшений
+        function resetPowerups() {
+            return {
+                bombProtection: 0,
+                multiplierBoost: 0,
+                bombDetector: 0,
+                cashBoost: false,
+                safeStart: false,
+                bonusBet: false,
+                crystalFinder: false
+            };
+        }
+        
+        // Показать случайный алмаз (для улучшения "Искатель алмазов")
+        function revealRandomCrystal() {
+            // Найдем все индексы, которые не бомбы и не открыты
+            const safeTiles = [];
+            for (let i = 0; i < 25; i++) {
+                if (!bombs.includes(i)) {
+                    safeTiles.push(i);
+                }
+            }
+            if (safeTiles.length === 0) return;
+            
+            const randomIndex = Math.floor(Math.random() * safeTiles.length);
+            const crystalIndex = safeTiles[randomIndex];
+            const crystalTile = document.querySelector(`.tile[data-index="${crystalIndex}"]`);
+            
+            if (crystalTile) {
+                setTimeout(() => {
+                    crystalTile.textContent = crystal;
+                    crystalTile.style.backgroundColor = '#4cc9f0';
+                    crystalTile.style.opacity = '0.7';
+                }, 500);
+            }
+        }
         
         function startGame() {
             const bet = parseInt(betInput.value);
@@ -552,6 +967,11 @@
                 return;
             }
             
+            // Активируем улучшения для этой игры
+            activePowerups = {...nextGamePowerups};
+            nextGamePowerups = resetPowerups();
+            updatePowerupsDisplay();
+            
             // Увеличиваем счетчик раундов
             roundsPlayed++;
             updateRoundCounter();
@@ -560,8 +980,16 @@
             // Снимаем ставку с баланса
             balance -= bet;
             baseBet = bet;
+            
+            // Проверка на нулевой баланс
+            if (balance <= 0) {
+                showGameOver("Ваш баланс достиг нуля! Игра окончена");
+                return;
+            }
+            
             updateUI();
             updateStatus();
+            saveGame();
             
             // Генерируем бомбы
             bombs = [];
@@ -597,6 +1025,16 @@
                 tilesContainer.appendChild(tile);
             }
             
+            // Применяем улучшение "Детектор бомб"
+            for (let i = 0; i < activePowerups.bombDetector; i++) {
+                revealRandomBomb();
+            }
+            
+            // Применяем улучшение "Искатель алмазов"
+            if (activePowerups.crystalFinder) {
+                revealRandomCrystal();
+            }
+            
             gameActive = true;
             tilesOpened = 0;
             currentMultiplier = 1;
@@ -607,6 +1045,23 @@
             startBtn.disabled = true;
             betInput.disabled = true;
             bombsInput.disabled = true;
+        }
+        
+        // Показать случайную бомбу (для улучшения "Детектор бомб")
+        function revealRandomBomb() {
+            if (bombs.length === 0) return;
+            
+            const randomIndex = Math.floor(Math.random() * bombs.length);
+            const bombIndex = bombs[randomIndex];
+            const bombTile = document.querySelector(`.tile[data-index="${bombIndex}"]`);
+            
+            if (bombTile) {
+                setTimeout(() => {
+                    bombTile.textContent = '💣';
+                    bombTile.style.backgroundColor = '#f72585';
+                    bombTile.style.opacity = '0.7';
+                }, 500);
+            }
         }
         
         function handleTileClick(index) {
@@ -620,36 +1075,82 @@
             tile.classList.add('revealed');
             
             if (bombs.includes(index)) {
-                // Игрок нашел бомбу
-                animationInProgress = true;
-                gameActive = false; // Блокируем игру сразу
+                // Проверяем улучшения
+                let bombDefused = false;
                 
-                tile.classList.add('bomb');
-                tile.textContent = '💣';
+                // Безопасный старт (первые 2 плитки)
+                if (activePowerups.safeStart && tilesOpened < 2) {
+                    bombDefused = true;
+                    // Анимация безопасного старта
+                    tile.style.animation = "greenFlash 1s";
+                    setTimeout(() => tile.style.animation = "", 1000);
+                    showMessage("Безопасный старт сработал! Бомба обезврежена", "win");
+                } 
+                // Защита от бомб
+                else if (activePowerups.bombProtection > 0) {
+                    bombDefused = true;
+                    activePowerups.bombProtection -= 1;
+                    updatePowerupsDisplay();
+                    // Анимация щита
+                    tile.innerHTML = '🛡️';
+                    tile.style.animation = "shieldPulse 0.5s 3";
+                    setTimeout(() => {
+                        tile.style.animation = "";
+                        tile.innerHTML = '';
+                    }, 1500);
+                    showMessage("Защита от бомб сработала! Бомба обезврежена", "win");
+                }
                 
-                // Немедленно блокируем кнопки действий
-                actionButtonsEl.innerHTML = '';
-                messageEl.textContent = 'Вы нашли бомбу! Игра завершена.';
-                cashoutAvailable = false;
-                
-                // Эффект взрыва
-                const explosion = document.createElement('div');
-                explosion.className = 'explosion';
-                tile.appendChild(explosion);
-                
-                // Завершаем игру после анимации
-                setTimeout(() => {
-                    endGame(false);
-                    animationInProgress = false;
-                }, 800);
-            } else {
-                // Игрок открыл алмаз
+                if (bombDefused) {
+                    // Удаляем бомбу
+                    bombs.splice(bombs.indexOf(index), 1);
+                    // Обрабатываем как алмаз
+                    processCrystalReveal();
+                } else {
+                    // Взрыв
+                    animationInProgress = true;
+                    gameActive = false;
+                    
+                    tile.classList.add('bomb');
+                    tile.textContent = '💣';
+                    
+                    actionButtonsEl.innerHTML = '';
+                    messageEl.textContent = 'Вы нашли бомбу! Игра завершена.';
+                    cashoutAvailable = false;
+                    
+                    // Эффект взрыва
+                    const explosion = document.createElement('div');
+                    explosion.className = 'explosion';
+                    tile.appendChild(explosion);
+                    
+                    // Завершаем игру после анимации
+                    setTimeout(() => {
+                        endGame(false);
+                        animationInProgress = false;
+                    }, 800);
+                    return;
+                }
+            }
+            
+            // Если плитка не бомба или бомба обезврежена
+            processCrystalReveal();
+            
+            function processCrystalReveal() {
                 tilesOpened++;
                 
-                // Увеличиваем множитель
-                const increment = 0.05 + (bombs.length * 0.01);
-                currentMultiplier = 1 + (tilesOpened * increment * 2);
+                // Увеличиваем множитель (с учетом улучшения)
+                const baseIncrement = 0.05 + (bombs.length * 0.01);
+                let increment = baseIncrement;
                 
+                // Усилитель множителя
+                if (activePowerups.multiplierBoost > 0) {
+                    increment += (activePowerups.multiplierBoost * 0.2);
+                    // Анимация множителя
+                    currentMultiplierEl.style.animation = "multiplierBoost 0.5s";
+                    setTimeout(() => currentMultiplierEl.style.animation = "", 500);
+                }
+                
+                currentMultiplier = 1 + (tilesOpened * increment * 2);
                 updateMultiplier();
                 
                 tile.classList.add('crystal');
@@ -685,26 +1186,37 @@
         }
         
         function handleWin(amount) {
+            // Применяем денежный буст
+            if (activePowerups.cashBoost) {
+                amount = Math.round(amount * 1.5);
+                activePowerups.cashBoost = false;
+                updatePowerupsDisplay();
+                showMessage("Денежный буст применен! Выигрыш увеличен на 50%", "win");
+            }
+            
             balance += amount;
             checkLevelProgression();
             updateUI();
             updateStatus();
+            saveGame();
         }
         
         function checkLevelProgression() {
             // Автоматически повышаем уровень, если баланс превышает цель
             while (balance >= target) {
-                currentLevel++;
-                const nextTarget = Math.round(target * 1.5);
+                const nextTarget = calculateNextTarget();
                 
                 // Если превышаем цель следующего уровня
                 if (balance >= nextTarget) {
-                    showMessage(`Поздравляем! Вы достигли уровня ${currentLevel} и сразу переходите на уровень ${currentLevel+1}!`, "win");
+                    currentLevel++;
                     target = nextTarget;
+                    showMessage(`Поздравляем! Вы достигли уровня ${currentLevel} и сразу переходите на уровень ${currentLevel+1}!`, "win");
                 } else {
-                    showMessage(`Поздравляем! Вы достигли цели уровня ${currentLevel-1}. Переходим на уровень ${currentLevel}!`, "win");
+                    showMessage(`Поздравляем! Вы достигли цели уровня ${currentLevel}. Переходим на уровень ${currentLevel+1}!`, "win");
+                    currentLevel++;
                     target = nextTarget;
                     roundsPlayed = 0; // Сбрасываем раунды при достижении цели
+                    updateRoundCounter();
                     break;
                 }
             }
@@ -718,6 +1230,16 @@
                 const winAmount = Math.round(baseBet * currentMultiplier);
                 balance += winAmount;
                 checkLevelProgression();
+                saveGame();
+            }
+            
+            // Бонусная ставка при проигрыше
+            if (!isWin && activePowerups.bonusBet) {
+                balance += baseBet;
+                activePowerups.bonusBet = false;
+                updatePowerupsDisplay();
+                showMessage("Бонусная ставка: ваша ставка возвращена!", "win");
+                saveGame();
             }
             
             // Показываем все плитки
@@ -737,17 +1259,18 @@
                 }
             });
             
-            // Проверяем завершение 3 раундов
+            // Проверяем завершение раундов
             if (roundsPlayed >= maxRounds) {
                 if (balance < target) {
-                    // Игрок не достиг цели за 3 раунда
+                    // Игрок не достиг цели за раунды
                     setTimeout(() => {
-                        showGameOver();
+                        showGameOver(`Вы не достигли цели за ${maxRounds} раунда. Игра будет перезапущена`);
                     }, 1500);
                 } else {
                     // Игрок достиг цели в последнем раунде
                     roundsPlayed = 0;
                     updateRoundCounter();
+                    saveGame();
                 }
             }
             
@@ -768,7 +1291,8 @@
             updateMultiplier();
         }
         
-        function showGameOver() {
+        function showGameOver(reason) {
+            gameOverReason.textContent = reason;
             gameOverEl.classList.add('visible');
             gameActive = false;
             startBtn.disabled = true;
@@ -782,6 +1306,12 @@
             target = 450;
             currentLevel = 1;
             roundsPlayed = 0;
+            maxRounds = 3;
+            
+            // Сброс улучшений
+            activePowerups = resetPowerups();
+            nextGamePowerups = resetPowerups();
+            updatePowerupsDisplay();
             
             // Сброс UI
             gameOverEl.classList.remove('visible');
@@ -799,13 +1329,15 @@
             // Очищаем плитки
             tilesContainer.innerHTML = '';
             actionButtonsEl.innerHTML = '';
+            
+            saveGame();
         }
         
         function updateUI() {
             balanceEl.textContent = balance;
             targetEl.textContent = target;
             currentLevelEl.textContent = currentLevel;
-            nextTargetEl.textContent = Math.round(target * 1.5);
+            nextTargetEl.textContent = calculateNextTarget();
             remainingEl.textContent = Math.max(0, target - balance);
         }
         
@@ -827,11 +1359,17 @@
         }
         
         function updateStatus() {
+            // Определяем сложность уровня
+            let difficulty = "";
+            if (currentLevel < 5) difficulty = "лёгкий";
+            else if (currentLevel < 13) difficulty = "средний";
+            else difficulty = "сложный";
+            
             if (balance < target) {
-                statusTextEl.textContent = `Наберите $${target} на балансе для перехода на уровень ${currentLevel + 1}`;
+                statusTextEl.textContent = `Наберите $${target} (${difficulty} уровень)`;
                 statusTextEl.style.color = "#4cc9f0";
             } else {
-                statusTextEl.textContent = `Поздравляем! Вы достигли цели уровня ${currentLevel}. Переходим на уровень ${currentLevel + 1}!`;
+                statusTextEl.textContent = `Поздравляем! Вы достигли цели уровня ${currentLevel}.`;
                 statusTextEl.style.color = "#f72585";
             }
         }
@@ -844,6 +1382,160 @@
         function showMessage(text, type) {
             messageEl.innerHTML = text;
             messageEl.className = type + '-message';
+        }
+        
+        // Обновление отображения активных улучшений
+        function updatePowerupsDisplay() {
+            powerupsContainer.innerHTML = '';
+            
+            // Защита от бомб
+            if (activePowerups.bombProtection > 0) {
+                const badge = document.createElement('div');
+                badge.className = 'powerup-badge';
+                badge.innerHTML = `🛡️ x${activePowerups.bombProtection}`;
+                powerupsContainer.appendChild(badge);
+            }
+            
+            // Усилитель множителя
+            if (activePowerups.multiplierBoost > 0) {
+                const badge = document.createElement('div');
+                badge.className = 'powerup-badge';
+                badge.innerHTML = `🚀 +${activePowerups.multiplierBoost * 0.2}x`;
+                powerupsContainer.appendChild(badge);
+            }
+            
+            // Безопасный старт
+            if (activePowerups.safeStart) {
+                const badge = document.createElement('div');
+                badge.className = 'powerup-badge';
+                badge.innerHTML = '🟢 Безопасный старт';
+                powerupsContainer.appendChild(badge);
+            }
+            
+            // Денежный буст
+            if (activePowerups.cashBoost) {
+                const badge = document.createElement('div');
+                badge.className = 'powerup-badge';
+                badge.innerHTML = '💰 x1.5 Выигрыш';
+                powerupsContainer.appendChild(badge);
+            }
+            
+            // Бонусная ставка
+            if (activePowerups.bonusBet) {
+                const badge = document.createElement('div');
+                badge.className = 'powerup-badge';
+                badge.innerHTML = '🎰 Возврат ставки';
+                powerupsContainer.appendChild(badge);
+            }
+        }
+        
+        // Применение фона
+        function applyBackground(bgId) {
+            currentBackground = bgId;
+            document.body.className = '';
+            
+            switch(bgId) {
+                case 1: // Космический фон
+                    document.body.style.background = 'linear-gradient(135deg, #0d0d1a, #1a0d2e, #0d1a2e)';
+                    break;
+                case 2: // Лесной фон
+                    document.body.style.background = 'linear-gradient(135deg, #0d2e1a, #1a2e0d, #0d2e2e)';
+                    break;
+                case 3: // Пустынный фон
+                    document.body.style.background = 'linear-gradient(135deg, #2e1a0d, #2e2e0d, #2e1a1a)';
+                    break;
+                default: // Стандартный фон
+                    document.body.style.background = 'linear-gradient(135deg, #1a1a2e, #16213e, #0f3460)';
+            }
+        }
+        
+        // Функции для работы с магазином
+        function openShop() {
+            renderShopItems();
+            shopModal.classList.add('visible');
+        }
+        
+        function closeShopModal() {
+            shopModal.classList.remove('visible');
+        }
+        
+        function renderShopItems() {
+            shopItemsContainer.innerHTML = '';
+            
+            shopItems.forEach(item => {
+                const itemEl = document.createElement('div');
+                const isBg = item.id.startsWith('bg');
+                const isUnlocked = isBg && unlockedBackgrounds.includes(parseInt(item.id.replace('bg', '')));
+                
+                itemEl.className = `shop-item ${item.price > balance || isUnlocked ? 'disabled' : ''}`;
+                itemEl.innerHTML = `
+                    <div class="shop-item-icon">${item.icon}</div>
+                    <div class="shop-item-name">${item.name}</div>
+                    <div class="shop-item-price">${isUnlocked ? '✔️ Куплено' : '$' + item.price}</div>
+                    <div class="shop-item-effect">${item.description}</div>
+                `;
+                
+                if (item.price <= balance && !isUnlocked) {
+                    itemEl.addEventListener('click', () => {
+                        buyItem(item);
+                    });
+                }
+                
+                shopItemsContainer.appendChild(itemEl);
+            });
+        }
+        
+        function buyItem(item) {
+            if (balance < item.price) {
+                showMessage("Недостаточно средств для покупки!", "error");
+                return;
+            }
+            
+            balance -= item.price;
+            updateUI();
+            
+            // Применяем эффект предмета
+            item.effect();
+            
+            // Перерисовываем магазин
+            renderShopItems();
+            saveGame();
+        }
+        
+        // Сохранение игры
+        function saveGame() {
+            const gameData = {
+                balance,
+                target,
+                currentLevel,
+                roundsPlayed,
+                maxRounds,
+                activePowerups,
+                nextGamePowerups,
+                unlockedBackgrounds,
+                currentBackground
+            };
+            localStorage.setItem('bombGameSave', JSON.stringify(gameData));
+        }
+        
+        // Загрузка игры
+        function loadGame() {
+            const savedGame = localStorage.getItem('bombGameSave');
+            if (savedGame) {
+                const gameData = JSON.parse(savedGame);
+                
+                balance = gameData.balance || 300;
+                target = gameData.target || 450;
+                currentLevel = gameData.currentLevel || 1;
+                roundsPlayed = gameData.roundsPlayed || 0;
+                maxRounds = gameData.maxRounds || 3;
+                activePowerups = gameData.activePowerups || resetPowerups();
+                nextGamePowerups = gameData.nextGamePowerups || resetPowerups();
+                unlockedBackgrounds = gameData.unlockedBackgrounds || [0];
+                currentBackground = gameData.currentBackground || 0;
+                
+                applyBackground(currentBackground);
+            }
         }
     </script>
 </body>
